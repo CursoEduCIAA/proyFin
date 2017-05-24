@@ -54,7 +54,6 @@
 /*==================[inclusions]=============================================*/
 #include "proyFin.h"       /* <= own header */
 
-
 /*==================[internal data declaration]==============================*/
 
 
@@ -83,7 +82,6 @@
 int main(void)
 {
    /* perform the needed initialization here */
-
 }
 
 
