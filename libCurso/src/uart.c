@@ -70,7 +70,6 @@
 
 #include "uart.h"
 
-
 /*==================[macros and definitions]=================================*/
 #define UART2_PIN_PKG	7
 #define UART2_PIN_TXD	1
@@ -88,28 +87,77 @@
 /*==================[internal functions definition]==========================*/
 void InitUart(uint8_t uart_id, uint32_t baud)
 {
+	/*
+	 * MD_PDN: Enable pull-down resistor at pad
+	 * MD_PLN: Disable pull-down and pull-up resistor at resistor at pad
+	 * MD_EZI: Input buffer enable
+	 * MD_ZI: Disable input glitch filter
+	*/
 
+	if(uart_id==UART2){
+		/* UART2 (USB-UART) */
+		Chip_UART_Init (LPC_USART2);
+		Chip_UART_SetBaud (LPC_USART2, baud);
+
+		Chip_UART_SetupFIFOS(LPC_USART2, UART_FCR_FIFO_EN | UART_FCR_TRG_LEV0);
+
+		Chip_UART_TXEnable(LPC_USART2);
+
+		Chip_SCU_PinMux(UART2_PIN_PKG, UART2_PIN_TXD, MD_PDN, FUNC6);              /* P7_1: UART2_TXD */
+		Chip_SCU_PinMux(UART2_PIN_PKG, UART2_PIN_RXD, MD_PLN|MD_EZI|MD_ZI, FUNC6); /* P7_2: UART2_RXD */
+
+		Chip_UART_ConfigData (LPC_USART2, UART_LCR_WLEN8 | UART_LCR_SBS_1BIT | UART_LCR_PARITY_DIS );
+	}
 }
 
 uint8_t ReadUartByte(uint8_t uart_id)
 {
+	uint8_t dat=0;
 
+	if(UART2==uart_id){
+		dat = Chip_UART_ReadByte(LPC_USART2);
+	}
+
+	return dat;
 }
 
 void WriteUartByte(uint8_t uart_id, uint8_t byte)
 {
-
+	if(uart_id==UART2){
+		Chip_UART_SendByte(LPC_USART2, byte);
+	}
 }
 
 void WriteUartNBytes(uint8_t uart_id, uint8_t* data, uint32_t n)
 {
+	uint32_t i;
 
+	if(uart_id==UART2){
+		for(i=0; i<n; i++){
+			Chip_UART_SendByte(LPC_USART2, data[i]);
+		}
+	}
 }
 
 
 void SendUartFloatAscii(uint8_t uart_id, float val, uint8_t n_dec)
 {
+	uint32_t i;
+	char str[10];
+	int entero, decimal, env;
 
+	if(uart_id==UART2){
+		entero=(int)val;
+		Chip_UART_SendByte(LPC_USART2, entero+'0');
+		Chip_UART_SendByte(LPC_USART2, ',');
+
+		for(i=0; i<n_dec; i++){
+			val=val-entero;
+			val=val*10;
+			entero=(int)val;
+			Chip_UART_SendByte(LPC_USART2, entero+'0');
+		}
+	}
 }
 
 /*==================[external functions definition]==========================*/
