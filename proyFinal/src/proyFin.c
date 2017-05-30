@@ -53,8 +53,8 @@
 
 /*==================[inclusions]=============================================*/
 #include "proyFin.h"       /* <= own header */
-
-
+#include "uart.h"
+#include "led.h"
 /*==================[internal data declaration]==============================*/
 
 
@@ -82,7 +82,44 @@
 
 int main(void)
 {
+	uint8_t var;
+	uint32_t i;
+
    /* perform the needed initialization here */
+	InitUart(UART2, 9600);
+	leds_init();
+	/*
+		uint8_t ReadUartByte(uint8_t uart_id);
+		void WriteUartByte(uint8_t uart_id, uint8_t byte);
+		void WriteUartNBytes(uint8_t uart_id, uint8_t* data, uint32_t n);
+		void SendUartFloatAscii(uint8_t uart_id, float val, uint8_t n_dec);
+	 */
+
+	float f=1.23;
+	uint8_t str[5]={"Hola"};
+
+	for(i=0; i<100000; i++);
+	for(i=0; i<100000; i++);
+
+
+	SendUartFloatAscii(UART2, f, 1);
+	for(i=0; i<100000; i++);
+
+	SendUartFloatAscii(UART2, f, 2);
+	for(i=0; i<100000; i++);
+
+	WriteUartNBytes(UART2, str, 4);
+	for(i=0; i<100000; i++);
+
+
+	while(1){
+		var=ReadUartByte(UART2);
+		if(var!=0){
+			WriteUartByte(UART2, var);
+		}
+
+		for(i=0; i<100000; i++);
+	}
 
 }
 
