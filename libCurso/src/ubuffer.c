@@ -7,11 +7,14 @@ void initCola(struct Qbuffer* bCircular)
 	bCircular->tail=0;
 }
 
-void producirValor(struct Qbuffer* bCircular, uint8_t valor)
+void producirValor(struct Qbuffer* bCircular, unsigned char valor)
 {
 	bCircular->buffer[bCircular->head]=valor;
 	bCircular->head=((bCircular->head+1)%SIZEBUFFER);
-	bCircular->size++;
+	if(bCircular->size<SIZEBUFFER)
+		bCircular->size++;
+	else
+		bCircular->size=SIZEBUFFER;
 }
 
 uint8_t consumirValor(struct Qbuffer* bCircular)
