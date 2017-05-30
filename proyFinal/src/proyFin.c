@@ -55,6 +55,8 @@
 #include "proyFin.h"       /* <= own header */
 #include "uart.h"
 #include "led.h"
+#include "adc.h"
+
 /*==================[internal data declaration]==============================*/
 
 
@@ -82,43 +84,37 @@
 
 int main(void)
 {
-	uint8_t var;
+	uint8_t valorADC_H, valorADC_L;
+	uint16_t valorADC;
 	uint32_t i;
+	float fVal;
 
-   /* perform the needed initialization here */
+	adc_init(1);
 	InitUart(UART2, 9600);
 	leds_init();
-	/*
-		uint8_t ReadUartByte(uint8_t uart_id);
-		void WriteUartByte(uint8_t uart_id, uint8_t byte);
-		void WriteUartNBytes(uint8_t uart_id, uint8_t* data, uint32_t n);
-		void SendUartFloatAscii(uint8_t uart_id, float val, uint8_t n_dec);
-	 */
 
-	float f=1.23;
-	uint8_t str[5]={"Hola"};
-
-	for(i=0; i<100000; i++);
-	for(i=0; i<100000; i++);
-
-
-	SendUartFloatAscii(UART2, f, 1);
-	for(i=0; i<100000; i++);
-
-	SendUartFloatAscii(UART2, f, 2);
-	for(i=0; i<100000; i++);
-
-	WriteUartNBytes(UART2, str, 4);
-	for(i=0; i<100000; i++);
-
+	// adc_convertir();
+	// valorADC=adc_pool(1);
 
 	while(1){
-		var=ReadUartByte(UART2);
-		if(var!=0){
-			WriteUartByte(UART2, var);
-		}
+		adc_convertir();
+		valorADC=adc_pool(1);
 
-		for(i=0; i<100000; i++);
+		fVal=valorADC;
+		fVal=(fVal*3.3)/1023;
+
+		SendUartFloatAscii(UART2, fVal, 2);
+		WriteUartByte(UART2, '\r');
+
+
+		//valorADC_L=(uint8_t)(valorADC&0x00FF);
+		//valorADC_H=(uint8_t)((valorADC>>8)&0x00FF);
+
+		//WriteUartByte(UART2, valorADC_L);
+		//WriteUartByte(UART2, valorADC_H);
+
+
+		for(i=0; i<600000; i++);
 	}
 
 }
