@@ -8,7 +8,7 @@ void lecturaPaquete (struct Qbuffer* bCircular, uint8_t lon)
 
 	if(lon>SIZEBUFFER)
 		return;
-	while(consumirValor(bCircular)=='*');
+	while(consumirValor(bCircular)!='*'); //acá estaba ==, lo cambié a !=
 
 	paquete[indice]=consumirValor(bCircular);
 
