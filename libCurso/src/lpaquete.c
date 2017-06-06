@@ -1,37 +1,16 @@
 #include "ubuffer.h"
 #include "lpaquete.h"
 
-void lecturaPaquete (struct Qbuffer* bCircular, uint8_t lon)
-{
-	uint8_t paquete[lon];
-	uint8_t indice=0;
+#define SIZEPACKAGE 10
 
-	if(lon>SIZEBUFFER)
-		return;
-	while(consumirValor(bCircular)!='*'); //ac� estaba ==, lo cambi� a !=
-
-	paquete[indice]=consumirValor(bCircular);
-
-	while(paquete[indice]!='\n')
-	{
-
-		if(paquete[indice]=='*')
-			indice=0;
-		else
-			indice++;
-
-
-		paquete[indice]=consumirValor(bCircular);
-	}
-
-}
-
------------------------------------------------------------
-
+struct Qread{
+	unsigned char paquete[SIZEPACKAGE];
+	unsigned char indice;
+};
 
 void lecturaPaquete(struct Qbuffer* bCircular, struct Qread* lPaquete)
 {
-	while(consumirValor(bCircular)=='*');
+	while(consumirValor(bCircular)!='*');
 	producirString(lPaquete,consumirValor(bCircular));
 
 	while(leerPosicionString(lPaquete, ultimoIndice(lPaquete))!='\n')
@@ -50,23 +29,26 @@ void producirString(struct Qread* palabra, unsigned char valor)
 	palabra->indice++;
 }
 
-void borrarIndice(struct Qread* palabra)																			{palabra->indice=0;}
-
-unsigned char ultimoIndice(struct Qread* palabra)															{return (palabra->indice);}
-
-unsigned char leerPosicionString(struct Qread* palabra, unsigned char indice)	{return (palabra->paquete[indice]);}
-
-void cerrarString(struct Qread* palabra)																			{palabra->paquete[(palabra->indice)+1]='\0';}
-
-#define SIZEPACKAGE 10
-struct Qread{
-	unsigned char paquete[SIZEPACKAGE];
-	unsigned char indice;
-};
-void initPaquete(struct Qread* lPaquete)
+void borrarIndice(struct Qread* palabra)
 {
-	unsigned i=0;
-	for(i=SIZEPACKAGE;i>0;i--)
-		lPaquete->paquete[i]=0;
-	lPaquete->indice=0;
+	palabra->indice=0;
 }
+
+unsigned char ultimoIndice(struct Qread* palabra)
+{
+	if(palabra->indice==0)
+		return 0;
+	else
+		return (palabra->indice-1);
+}
+
+unsigned char leerPosicionString(struct Qread* palabra, unsigned char indice)
+{
+	return (palabra->paquete[indice]);
+}
+
+void cerrarString(struct Qread* palabra)
+{
+	palabra->paquete[(palabra->indice)+1]='\0';
+}
+
