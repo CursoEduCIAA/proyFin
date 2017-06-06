@@ -25,3 +25,48 @@ void lecturaPaquete (struct Qbuffer* bCircular, uint8_t lon)
 	}
 
 }
+
+-----------------------------------------------------------
+
+
+void lecturaPaquete(struct Qbuffer* bCircular, struct Qread* lPaquete)
+{
+	while(consumirValor(bCircular)=='*');
+	producirString(lPaquete,consumirValor(bCircular));
+
+	while(leerPosicionString(lPaquete, ultimoIndice(lPaquete))!='\n')
+		{
+		if(leerPosicionString(lPaquete, ultimoIndice(lPaquete))=='*')
+			borrarIndice(lPaquete);
+		else
+			producirString(lPaquete,consumirValor(bCircular));
+		}
+	cerrarString(lPaquete);
+}
+
+void producirString(struct Qread* palabra, unsigned char valor)
+{
+	palabra->paquete[palabra->indice]=valor;
+	palabra->indice++;
+}
+
+void borrarIndice(struct Qread* palabra)																			{palabra->indice=0;}
+
+unsigned char ultimoIndice(struct Qread* palabra)															{return (palabra->indice);}
+
+unsigned char leerPosicionString(struct Qread* palabra, unsigned char indice)	{return (palabra->paquete[indice]);}
+
+void cerrarString(struct Qread* palabra)																			{palabra->paquete[(palabra->indice)+1]='\0';}
+
+#define SIZEPACKAGE 10
+struct Qread{
+	unsigned char paquete[SIZEPACKAGE];
+	unsigned char indice;
+};
+void initPaquete(struct Qread* lPaquete)
+{
+	unsigned i=0;
+	for(i=SIZEPACKAGE;i>0;i--)
+		lPaquete->paquete[i]=0;
+	lPaquete->indice=0;
+}
