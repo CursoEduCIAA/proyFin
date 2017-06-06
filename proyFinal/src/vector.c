@@ -25,6 +25,8 @@
 
 /*==================[inclusions]=============================================*/
 #include "proyFin.h"
+#include "uart.h"
+
 
 /*==================[macros and definitions]=================================*/
 
@@ -139,7 +141,7 @@ void (* const g_pfnVectors[])(void) = {
    ISR_NoHandler,      /* 0x3e 0x000000F8 - No Handler set for ISR UART0_ERR (IRQ 46) */
    ISR_NoHandler,      /* 0x3f 0x000000FC - No Handler set for ISR UART1 (IRQ 47) */
    ISR_NoHandler,      /* 0x40 0x00000100 - No Handler set for ISR UART1_ERR (IRQ 48) */
-   ISR_NoHandler,      /* 0x41 0x00000104 - No Handler set for ISR UART2 (IRQ 49) */
+   UART2_IRQHandler,      /* 0x41 0x00000104 - No Handler set for ISR UART2 (IRQ 49) */
    ISR_NoHandler,      /* 0x42 0x00000108 - No Handler set for ISR UART2_ERR (IRQ 50) */
    ISR_NoHandler,      /* 0x43 0x0000010C - No Handler set for ISR UART3 (IRQ 51) */
    ISR_NoHandler,      /* 0x44 0x00000110 - No Handler set for ISR UART3_ERR (IRQ 52) */

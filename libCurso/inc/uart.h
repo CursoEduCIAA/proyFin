@@ -79,6 +79,7 @@ void WriteUartByte(uint8_t uart_id, uint8_t byte);
 void WriteUartNBytes(uint8_t uart_id, uint8_t* data, uint32_t n);
 void SendUartFloatAscii(uint8_t uart_id, float val, uint8_t n_dec);
 
+void UART2_IRQHandler(void);
 
 /*==================[external functions declaration]=========================*/
 

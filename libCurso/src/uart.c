@@ -76,6 +76,7 @@
 #define UART2_PIN_RXD	2
 
 /*==================[internal data declaration]==============================*/
+uint8_t datoGlobal=0;
 
 /*==================[internal functions declaration]=========================*/
 /* GPIO5 LEDs pins to OUTPUT */
@@ -107,18 +108,28 @@ void InitUart(uint8_t uart_id, uint32_t baud)
 		Chip_SCU_PinMux(UART2_PIN_PKG, UART2_PIN_RXD, MD_PLN|MD_EZI|MD_ZI, FUNC6); /* P7_2: UART2_RXD */
 
 		Chip_UART_ConfigData (LPC_USART2, UART_LCR_WLEN8 | UART_LCR_SBS_1BIT | UART_LCR_PARITY_DIS );
+
+		// Configuracion de la interrupcion de la UART
+		Chip_UART_IntEnable(LPC_USART2, (UART_IER_RBRINT | UART_IER_RLSINT));
+		NVIC_SetPriority(USART2_IRQn, 1);
+		NVIC_EnableIRQ(USART2_IRQn);
 	}
 }
 
 uint8_t ReadUartByte(uint8_t uart_id)
 {
-	uint8_t dat=0;
 
+	uint8_t dato=0;
+	dato=datoGlobal;
+	datoGlobal=0;
+
+	/*
 	if(UART2==uart_id){
 		dat = Chip_UART_ReadByte(LPC_USART2);
 	}
+	*/
 
-	return dat;
+	return dato;
 }
 
 void WriteUartByte(uint8_t uart_id, uint8_t byte)
@@ -159,6 +170,13 @@ void SendUartFloatAscii(uint8_t uart_id, float val, uint8_t n_dec)
 		}
 	}
 }
+
+
+void UART2_IRQHandler(void)
+{
+	datoGlobal=Chip_UART_ReadByte(LPC_USART2);
+}
+
 
 /*==================[external functions definition]==========================*/
 /** \brief Main function
