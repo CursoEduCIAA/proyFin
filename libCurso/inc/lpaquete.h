@@ -7,3 +7,4 @@ void borrarIndice(struct Qread*);
 void cerrarString(struct Qread*);
 unsigned char ultimoIndice(struct Qread*);
 unsigned char leerPosicionString(struct Qread*, unsigned char);
+unsigned char* showPackage(struct Qread*);

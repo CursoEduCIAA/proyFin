@@ -52,3 +52,7 @@ void cerrarString(struct Qread* palabra)
 	palabra->paquete[(palabra->indice)+1]='\0';
 }
 
+unsigned char* showPackage(struct Qread* palabra)
+{
+	return palabra->paquete;
+}
