@@ -139,7 +139,7 @@ void leds_procesar(void)
 
 void UART2_IRQHandler(void)
 {
-	static uint8_t tx='c', datoGlobal;
+	static uint8_t tx='c';
 
 	/* Handle transmit interrupt if enabled */
 	if (LPC_USART2->IER & UART_IER_THREINT) {
@@ -149,9 +149,14 @@ void UART2_IRQHandler(void)
 			Chip_UART_SendByte(LPC_USART2, tx);
 		}
 
-		tx=0;
 
-		/* Disable transmit interrupt if the ring buffer is empty */
+
+		//if(buffer de transmitir esta vacio) {
+		//	Chip_UART_IntDisable(LPC_USART2, UART_IER_THREINT);
+		//}
+
+		// Borrar el if siguiente
+		tx=0;
 		if(tx==0) {
 			Chip_UART_IntDisable(LPC_USART2, UART_IER_THREINT);
 		}
@@ -159,11 +164,11 @@ void UART2_IRQHandler(void)
 	}
 
 	while (Chip_UART_ReadLineStatus(LPC_USART2) & UART_LSR_RDR) {
-		datoGlobal = Chip_UART_ReadByte(LPC_USART2);
-		tx=datoGlobal;
-		Chip_UART_IntEnable(LPC_USART2, UART_IER_THREINT);
-		//WriteUartByte(UART2, datoGlobal);
+		tx = Chip_UART_ReadByte(LPC_USART2);
 		// Agregar datoGlobal al buffer
+
+		// Borrar la linea siguiente
+		Chip_UART_IntEnable(LPC_USART2, UART_IER_THREINT);
 	}
 }
 
