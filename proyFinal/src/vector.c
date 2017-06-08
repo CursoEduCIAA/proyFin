@@ -25,7 +25,6 @@
 
 /*==================[inclusions]=============================================*/
 #include "proyFin.h"
-#include "uart.h"
 
 
 /*==================[macros and definitions]=================================*/
@@ -141,7 +140,7 @@ void (* const g_pfnVectors[])(void) = {
    ISR_NoHandler,      /* 0x3e 0x000000F8 - No Handler set for ISR UART0_ERR (IRQ 46) */
    ISR_NoHandler,      /* 0x3f 0x000000FC - No Handler set for ISR UART1 (IRQ 47) */
    ISR_NoHandler,      /* 0x40 0x00000100 - No Handler set for ISR UART1_ERR (IRQ 48) */
-   UART2_IRQHandler,      /* 0x41 0x00000104 - No Handler set for ISR UART2 (IRQ 49) */
+   ISR_NoHandler,      /* 0x41 0x00000104 - No Handler set for ISR UART2 (IRQ 49) */
    ISR_NoHandler,      /* 0x42 0x00000108 - No Handler set for ISR UART2_ERR (IRQ 50) */
    ISR_NoHandler,      /* 0x43 0x0000010C - No Handler set for ISR UART3 (IRQ 51) */
    ISR_NoHandler,      /* 0x44 0x00000110 - No Handler set for ISR UART3_ERR (IRQ 52) */
@@ -246,7 +245,7 @@ void (* const g_pfnVectors[])(void) = {
    ISR_NoHandler,      /* 0x27 0x0000009C - No Handler set for ISR SSP1 (IRQ 23) */
    ISR_NoHandler,      /* 0x28 0x000000A0 - No Handler set for ISR UART0 (IRQ 24) */
    ISR_NoHandler,      /* 0x29 0x000000A4 - No Handler set for ISR UART1 (IRQ 25) */
-   ISR_NoHandler,      /* 0x2a 0x000000A8 - No Handler set for ISR UART2 (IRQ 26) */
+   UART2_IRQHandler,      /* 0x2a 0x000000A8 - No Handler set for ISR UART2 (IRQ 26) */
    ISR_NoHandler,      /* 0x2b 0x000000AC - No Handler set for ISR UART3 (IRQ 27) */
    ISR_NoHandler,      /* 0x2c 0x000000B0 - No Handler set for ISR I2S0 (IRQ 28) */
    ISR_NoHandler,      /* 0x2d 0x000000B4 - No Handler set for ISR I2S1 (IRQ 29) */

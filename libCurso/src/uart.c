@@ -99,20 +99,22 @@ void InitUart(uint8_t uart_id, uint32_t baud)
 		/* UART2 (USB-UART) */
 		Chip_UART_Init (LPC_USART2);
 		Chip_UART_SetBaud (LPC_USART2, baud);
-
+		Chip_UART_ConfigData (LPC_USART2, UART_LCR_WLEN8 | UART_LCR_SBS_1BIT | UART_LCR_PARITY_DIS );
 		Chip_UART_SetupFIFOS(LPC_USART2, UART_FCR_FIFO_EN | UART_FCR_TRG_LEV0);
-
 		Chip_UART_TXEnable(LPC_USART2);
 
 		Chip_SCU_PinMux(UART2_PIN_PKG, UART2_PIN_TXD, MD_PDN, FUNC6);              /* P7_1: UART2_TXD */
 		Chip_SCU_PinMux(UART2_PIN_PKG, UART2_PIN_RXD, MD_PLN|MD_EZI|MD_ZI, FUNC6); /* P7_2: UART2_RXD */
 
-		Chip_UART_ConfigData (LPC_USART2, UART_LCR_WLEN8 | UART_LCR_SBS_1BIT | UART_LCR_PARITY_DIS );
 
 		// Configuracion de la interrupcion de la UART
 		Chip_UART_IntEnable(LPC_USART2, (UART_IER_RBRINT | UART_IER_RLSINT));
+
+
 		NVIC_SetPriority(USART2_IRQn, 1);
 		NVIC_EnableIRQ(USART2_IRQn);
+
+		datoGlobal=0;
 	}
 }
 
@@ -154,8 +156,7 @@ void WriteUartNBytes(uint8_t uart_id, uint8_t* data, uint32_t n)
 void SendUartFloatAscii(uint8_t uart_id, float val, uint8_t n_dec)
 {
 	uint32_t i;
-	char str[10];
-	int entero, decimal, env;
+	int entero;
 
 	if(uart_id==UART2){
 		entero=(int)val;
@@ -169,13 +170,27 @@ void SendUartFloatAscii(uint8_t uart_id, float val, uint8_t n_dec)
 			Chip_UART_SendByte(LPC_USART2, entero+'0');
 		}
 	}
+	/*
+	 	 Para usar esta funcion se debe
+	 	 if(uart_id==UART2){
+			entero=(int)val;
+
+			Agregar a buffer de trasmision:
+			entero+'0'
+			','
+
+			for(i=0; i<n_dec; i++){
+				val=val-entero;
+				val=val*10;
+				entero=(int)val;
+				Agregar a buffer de trasmision: entero+'0'
+			}
+		}
+	 */
 }
 
 
-void UART2_IRQHandler(void)
-{
-	datoGlobal=Chip_UART_ReadByte(LPC_USART2);
-}
+
 
 
 /*==================[external functions definition]==========================*/

@@ -96,15 +96,17 @@ int main(void)
 	// adc_convertir();
 	// valorADC=adc_pool(1);
 
+	WriteUartByte(UART2, 'A');
+
 	while(1){
-		adc_convertir();
-		valorADC=adc_pool(1);
+		//adc_convertir();
+		//valorADC=adc_pool(1);
 
-		fVal=valorADC;
-		fVal=(fVal*3.3)/1023;
+		//fVal=valorADC;
+		//fVal=(fVal*3.3)/1023;
 
-		SendUartFloatAscii(UART2, fVal, 2);
-		WriteUartByte(UART2, '\r');
+		//SendUartFloatAscii(UART2, fVal, 2);
+		//WriteUartByte(UART2, '\r');
 
 
 		//valorADC_L=(uint8_t)(valorADC&0x00FF);
@@ -114,7 +116,7 @@ int main(void)
 		//WriteUartByte(UART2, valorADC_H);
 
 
-		for(i=0; i<600000; i++);
+		//for(i=0; i<600000; i++);
 	}
 
 }
@@ -133,6 +135,36 @@ void teclas_procesar(void)
 void leds_procesar(void)
 {
 
+}
+
+void UART2_IRQHandler(void)
+{
+	static uint8_t tx='c', datoGlobal;
+
+	/* Handle transmit interrupt if enabled */
+	if (LPC_USART2->IER & UART_IER_THREINT) {
+
+		//tx = obtener dato de la cola
+		while ((Chip_UART_ReadLineStatus(LPC_USART2) & UART_LSR_THRE) != 0){
+			Chip_UART_SendByte(LPC_USART2, tx);
+		}
+
+		tx=0;
+
+		/* Disable transmit interrupt if the ring buffer is empty */
+		if(tx==0) {
+			Chip_UART_IntDisable(LPC_USART2, UART_IER_THREINT);
+		}
+
+	}
+
+	while (Chip_UART_ReadLineStatus(LPC_USART2) & UART_LSR_RDR) {
+		datoGlobal = Chip_UART_ReadByte(LPC_USART2);
+		tx=datoGlobal;
+		Chip_UART_IntEnable(LPC_USART2, UART_IER_THREINT);
+		//WriteUartByte(UART2, datoGlobal);
+		// Agregar datoGlobal al buffer
+	}
 }
 
 /** @} doxygen end group definition */
