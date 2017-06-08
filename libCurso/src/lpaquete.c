@@ -49,7 +49,7 @@ unsigned char leerPosicionString(struct Qread* palabra, unsigned char indice)
 
 void cerrarString(struct Qread* palabra)
 {
-	palabra->paquete[(palabra->indice)]='\0';
+	palabra->paquete[ultimoIndice(palabra)]='\0';
 }
 
 unsigned char* showPackage(struct Qread* palabra)
