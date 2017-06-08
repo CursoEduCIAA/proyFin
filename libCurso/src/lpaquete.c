@@ -4,8 +4,8 @@
 #define SIZEPACKAGE 10
 
 struct Qread{
-	unsigned char paquete[SIZEPACKAGE];
-	unsigned char indice;
+	uint8_t paquete[SIZEPACKAGE];
+	uint8_t indice;
 };
 
 void lecturaPaquete(struct Qbuffer* bCircular, struct Qread* lPaquete)
@@ -23,7 +23,7 @@ void lecturaPaquete(struct Qbuffer* bCircular, struct Qread* lPaquete)
 	cerrarString(lPaquete);
 }
 
-void producirString(struct Qread* palabra, unsigned char valor)
+void producirString(struct Qread* palabra, uint8_t valor)
 {
 	palabra->paquete[palabra->indice]=valor;
 	palabra->indice++;
@@ -34,7 +34,7 @@ void borrarIndice(struct Qread* palabra)
 	palabra->indice=0;
 }
 
-unsigned char ultimoIndice(struct Qread* palabra)
+uint8_t ultimoIndice(struct Qread* palabra)
 {
 	if(palabra->indice==0)
 		return 0;
@@ -42,7 +42,7 @@ unsigned char ultimoIndice(struct Qread* palabra)
 		return (palabra->indice-1);
 }
 
-unsigned char leerPosicionString(struct Qread* palabra, unsigned char indice)
+uint8_t leerPosicionString(struct Qread* palabra, uint8_t indice)
 {
 	return (palabra->paquete[indice]);
 }
@@ -52,7 +52,7 @@ void cerrarString(struct Qread* palabra)
 	palabra->paquete[ultimoIndice(palabra)]='\0';
 }
 
-unsigned char* showPackage(struct Qread* palabra)
+uint8_t* showPackage(struct Qread* palabra)
 {
 	return palabra->paquete;
 }
