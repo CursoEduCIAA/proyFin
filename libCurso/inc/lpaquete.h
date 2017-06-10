@@ -8,3 +8,4 @@ void cerrarString(struct Qread*);
 unsigned char ultimoIndice(struct Qread*);
 unsigned char leerPosicionString(struct Qread*, unsigned char);
 unsigned char* showPackage(struct Qread*);
+void generarPaquete(struct Qbuffer*, struct Qread*);

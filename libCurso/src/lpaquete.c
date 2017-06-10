@@ -56,3 +56,14 @@ uint8_t* showPackage(struct Qread* palabra)
 {
 	return palabra->paquete;
 }
+
+void generarPaquete(struct Qbuffer* salida, struct Qread* entrada)
+{
+	uint8_t i=0, j=0;
+	i=ultimoIndice(entrada);
+	producirValor(salida,'*');
+	for(j=0;j<=i;j++)
+		producirValor(salida,leerPosicionString(entrada,j));
+	producirValor(salida,'\n');
+}
+
