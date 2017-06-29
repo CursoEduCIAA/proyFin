@@ -53,9 +53,6 @@
 
 /*==================[inclusions]=============================================*/
 #include "proyFin.h"       /* <= own header */
-#include "uart.h"
-#include "led.h"
-#include "adc.h"
 
 /*==================[internal data declaration]==============================*/
 
