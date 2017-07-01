@@ -1,11 +1,41 @@
+#ifndef LPAQUETE_H_
+#define LPAQUETE_H_
+
 #include "ubuffer.h"
 
-void initPaquete(struct Qread*);
-void lecturaPaquete(struct Qbuffer*, struct Qread*);
-void producirString(struct Qread*, unsigned char);
-void borrarIndice(struct Qread*);
-void cerrarString(struct Qread*);
-unsigned char ultimoIndice(struct Qread*);
-unsigned char leerPosicionString(struct Qread*, unsigned char);
-unsigned char* showPackage(struct Qread*);
-void generarPaquete(struct Qbuffer*, struct Qread*);
+#include "stdint.h"
+
+#define SIZEPACKAGE 10
+
+typedef struct Qread{
+	uint8_t paquete[SIZEPACKAGE];
+	uint8_t indice;
+}Qread;
+
+// void initPaquete(Qread*);
+
+
+void lecturaPaquete(Qbuffer* bCircular, Qread* lPaquete);
+
+
+void producirString(Qread* palabra, uint8_t valor);
+
+
+void borrarIndice(Qread* palabra);
+
+
+uint8_t ultimoIndice(Qread* palabra);
+
+
+uint8_t leerPosicionString(Qread* palabra, uint8_t indice);
+
+
+void cerrarString(Qread* palabra);
+
+
+uint8_t showPackage(Qread* palabra); // sacado puntero
+
+
+void generarPaquete(Qbuffer* salida, Qread* entrada);
+
+#endif LPAQUETE_H_

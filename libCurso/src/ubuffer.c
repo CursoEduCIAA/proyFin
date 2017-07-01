@@ -1,30 +1,31 @@
 #include "ubuffer.h"
 
-void initCola(struct Qbuffer* bCircular)
+
+void initCola(Qbuffer* buffer)
 {
-	bCircular->size=0;
-	bCircular->head=0;
-	bCircular->tail=0;
+	buffer->size=0;
+	buffer->head=0;
+	buffer->tail=0;
 }
 
-void producirValor(struct Qbuffer* bCircular, unsigned char valor)
+void producirValor(Qbuffer* buffer, uint8_t valor)
 {
-	bCircular->buffer[bCircular->head]=valor;
-	bCircular->head=((bCircular->head+1)%SIZEBUFFER);
-	if(bCircular->size<SIZEBUFFER)
-		bCircular->size++;
+	buffer->buffer[buffer->head]=valor;
+	buffer->head=((buffer->head+1)%SIZEBUFFER);
+	if(buffer->size<SIZEBUFFER)
+		buffer->size++;
 	else
-		bCircular->size=SIZEBUFFER;
+		buffer->size=SIZEBUFFER;
 }
 
-uint8_t consumirValor(struct Qbuffer* bCircular)
+uint8_t consumirValor(Qbuffer* buffer)
 {
 	uint8_t valor=0;
-	if (bCircular->size>0)
+	if (buffer->size>0)
 		{
-		valor=bCircular->buffer[bCircular->tail];
-		bCircular->tail=((bCircular->tail+1)%SIZEBUFFER);
-		bCircular->size--;
+		valor=buffer->buffer[buffer->tail];
+		buffer->tail=((buffer->tail+1)%SIZEBUFFER);
+		buffer->size--;
 		}
 	return valor;
 }

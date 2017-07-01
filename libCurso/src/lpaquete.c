@@ -1,14 +1,8 @@
 #include "ubuffer.h"
 #include "lpaquete.h"
 
-#define SIZEPACKAGE 10
 
-struct Qread{
-	uint8_t paquete[SIZEPACKAGE];
-	uint8_t indice;
-};
-
-void lecturaPaquete(struct Qbuffer* bCircular, struct Qread* lPaquete)
+void lecturaPaquete(Qbuffer* bCircular, Qread* lPaquete)
 {
 	while(consumirValor(bCircular)!='*');
 	producirString(lPaquete,consumirValor(bCircular));
@@ -23,18 +17,18 @@ void lecturaPaquete(struct Qbuffer* bCircular, struct Qread* lPaquete)
 	cerrarString(lPaquete);
 }
 
-void producirString(struct Qread* palabra, uint8_t valor)
+void producirString(Qread* palabra, uint8_t valor)
 {
 	palabra->paquete[palabra->indice]=valor;
 	palabra->indice++;
 }
 
-void borrarIndice(struct Qread* palabra)
+void borrarIndice(Qread* palabra)
 {
 	palabra->indice=0;
 }
 
-uint8_t ultimoIndice(struct Qread* palabra)
+uint8_t ultimoIndice(Qread* palabra)
 {
 	if(palabra->indice==0)
 		return 0;
@@ -42,22 +36,22 @@ uint8_t ultimoIndice(struct Qread* palabra)
 		return (palabra->indice-1);
 }
 
-uint8_t leerPosicionString(struct Qread* palabra, uint8_t indice)
+uint8_t leerPosicionString(Qread* palabra, uint8_t indice)
 {
 	return (palabra->paquete[indice]);
 }
 
-void cerrarString(struct Qread* palabra)
+void cerrarString(Qread* palabra)
 {
 	palabra->paquete[ultimoIndice(palabra)]='\0';
 }
 
-uint8_t* showPackage(struct Qread* palabra)
+uint8_t showPackage(Qread* palabra)  // Borrado "uit8_t *"
 {
 	return palabra->paquete;
 }
 
-void generarPaquete(struct Qbuffer* salida, struct Qread* entrada)
+void generarPaquete(Qbuffer* salida, Qread* entrada)
 {
 	uint8_t i=0, j=0;
 	i=ultimoIndice(entrada);
