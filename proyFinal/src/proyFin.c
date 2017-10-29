@@ -58,6 +58,7 @@
 #include "uart.h"
 #include "led.h"
 
+#include "ubuffer.h"
 
 /*==================[internal data declaration]==============================*/
 
@@ -82,6 +83,10 @@
  *          warnings or errors.
  */
 
+void SendFloat(Qbuffer* sendBuffer, float val, uint8_t n_dec);
+void SendByte(Qbuffer* sendBuffer, uint8_t byte);
+
+volatile Qbuffer tx_buffer;
 
 
 int main(void)
@@ -91,9 +96,12 @@ int main(void)
 	uint32_t i;
 	float fVal;
 
+
 	adc_init(1);
 	InitUart(UART2, 9600);
 	leds_init();
+
+	initCola(&tx_buffer);
 
 	// adc_convertir();
 	// valorADC=adc_pool(1);
@@ -105,9 +113,11 @@ int main(void)
 		fVal=valorADC;
 		fVal=(fVal*3.3)/1023;
 
-		SendUartFloatAscii(UART2, fVal, 2);
-		WriteUartByte(UART2, '\r');
+		SendFloat(&tx_buffer, fVal, 2);
+		SendByte(&tx_buffer, '\r');
 
+		//SendUartFloatAscii(UART2, fVal, 2);
+		//WriteUartByte(UART2, '\r');
 
 		//valorADC_L=(uint8_t)(valorADC&0x00FF);
 		//valorADC_H=(uint8_t)((valorADC>>8)&0x00FF);
@@ -121,6 +131,51 @@ int main(void)
 
 }
 
+/**
+ * Función:
+ * void SendFloat(Qbuffer* sendBuffer, float val, uint8_t n_dec): Formatea y carga el valor de tensión
+ * el buffer de salida de transmisión.
+ *
+ * Parámetros:
+ * Qbuffer* sendBuffer: buffer de salida
+ * float val: valor de tensión
+ * uint8_t n_dec: cantidad de decimales que se quieren representar
+ *
+ * Devuelve:
+ * void: nada
+ */
+void SendFloat(Qbuffer* sendBuffer, float val, uint8_t n_dec)
+{
+	int entero,i;
+
+	entero=(int)val;
+	producirValor(sendBuffer,entero + '0');
+	producirValor(sendBuffer, ',');
+
+	for(i=0; i<n_dec; i++){
+		val=val-entero;
+		val=val*10;
+		entero=(int)val;
+		producirValor(sendBuffer,entero + '0');
+	}
+}
+
+/**
+ * Función:
+ * void SendByte(Qbuffer* sendBuffer, uint8_t byte): Agrega un byte al buffer circular
+ * de transmisión
+ *
+ * Parámetros:
+ * Qbuffer* sendBuffer: buffer de salida
+ * uint8_t byte: byte a agregar
+ *
+ * Devuelve:
+ * void: nada
+ */
+void SendByte(Qbuffer* sendBuffer, uint8_t byte)
+{
+	producirValor(sendBuffer,byte);
+}
 
 void ISR_RIT_Handler(void)
 {
@@ -135,6 +190,41 @@ void teclas_procesar(void)
 void leds_procesar(void)
 {
 
+}
+
+void UART2_IRQHandler(void)
+{
+	static uint8_t tx='c';
+
+	/* Handle transmit interrupt if enabled */
+	if (LPC_USART2->IER & UART_IER_THREINT) {
+
+		//tx = obtener dato de la cola
+		while ((Chip_UART_ReadLineStatus(LPC_USART2) & UART_LSR_THRE) != 0){
+			Chip_UART_SendByte(LPC_USART2, tx);
+		}
+
+
+
+		//if(buffer de transmitir esta vacio) {
+		//	Chip_UART_IntDisable(LPC_USART2, UART_IER_THREINT);
+		//}
+
+		// Borrar el if siguiente
+		tx=0;
+		if(tx==0) {
+			Chip_UART_IntDisable(LPC_USART2, UART_IER_THREINT);
+		}
+
+	}
+
+	while (Chip_UART_ReadLineStatus(LPC_USART2) & UART_LSR_RDR) {
+		tx = Chip_UART_ReadByte(LPC_USART2);
+		// Agregar datoGlobal al buffer
+
+		// Borrar la linea siguiente
+		Chip_UART_IntEnable(LPC_USART2, UART_IER_THREINT);
+	}
 }
 
 /** @} doxygen end group definition */
