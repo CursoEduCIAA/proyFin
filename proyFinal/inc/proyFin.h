@@ -120,6 +120,7 @@ void sft_tim_init(void);
 
 void sft_tim_procesar(void);
 
+void UART2_IRQHandler(void);
 
 /** @} doxygen end group definition */
 /** @} doxygen end group definition */

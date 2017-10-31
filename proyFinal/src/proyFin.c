@@ -85,6 +85,7 @@
 
 void SendFloat(Qbuffer* sendBuffer, float val, uint8_t n_dec);
 void SendByte(Qbuffer* sendBuffer, uint8_t byte);
+void uartSend(Qbuffer* sendBuffer, uint8_t data);
 
 volatile Qbuffer tx_buffer;
 
@@ -95,6 +96,9 @@ int main(void)
 	uint16_t valorADC;
 	uint32_t i;
 	float fVal;
+
+
+	uint8_t j;
 
 
 	adc_init(1);
@@ -113,8 +117,20 @@ int main(void)
 		fVal=valorADC;
 		fVal=(fVal*3.3)/1023;
 
-		SendFloat(&tx_buffer, fVal, 2);
-		SendByte(&tx_buffer, '\r');
+
+		// Test!!!
+		for(j=1;j<=40;j++)
+		{
+			uartSend(&tx_buffer, j + '0');
+		}
+		uartSend(&tx_buffer, '\r');
+		uartSend(&tx_buffer, '\n');
+
+
+		//SendFloat(&tx_buffer, fVal, 2);
+		//SendByte(&tx_buffer, '\r');
+		//Chip_UART_IntEnable(LPC_USART2, UART_IER_THREINT);
+
 
 		//SendUartFloatAscii(UART2, fVal, 2);
 		//WriteUartByte(UART2, '\r');
@@ -125,11 +141,21 @@ int main(void)
 		//WriteUartByte(UART2, valorADC_L);
 		//WriteUartByte(UART2, valorADC_H);
 
-
-		for(i=0; i<600000; i++);
+		for(i=0; i<6000000; i++);
 	}
-
 }
+
+
+void uartSend(Qbuffer* sendBuffer, uint8_t data)
+{
+	producirValor(sendBuffer,data);
+	if(sendBuffer->size == 1)
+	{
+		Chip_UART_SendByte(LPC_USART2, data);
+		Chip_UART_IntEnable(LPC_USART2, UART_IER_THREINT);
+	}
+}
+
 
 /**
  * Función:
@@ -149,7 +175,15 @@ void SendFloat(Qbuffer* sendBuffer, float val, uint8_t n_dec)
 	int entero,i;
 
 	entero=(int)val;
-	producirValor(sendBuffer,entero + '0');
+	if(sendBuffer->size == 0)
+	{
+		Chip_UART_SendByte(LPC_USART2, entero + '0');
+		Chip_UART_IntEnable(LPC_USART2, UART_IER_THREINT);
+	}
+	else
+	{
+		producirValor(sendBuffer,entero + '0');
+	}
 	producirValor(sendBuffer, ',');
 
 	for(i=0; i<n_dec; i++){
@@ -194,37 +228,31 @@ void leds_procesar(void)
 
 void UART2_IRQHandler(void)
 {
-	static uint8_t tx='c';
+	uint8_t tx;
+	uint8_t status = Chip_UART_ReadLineStatus(LPC_USART2);
+	static uint8_t primer_elemento = 0;
 
 	/* Handle transmit interrupt if enabled */
-	if (LPC_USART2->IER & UART_IER_THREINT) {
+	if(status & UART_LSR_THRE)
+	//if (LPC_USART2->IER & UART_IER_THREINT)
+	{
+		tx = consumirValor(&tx_buffer);
 
-		//tx = obtener dato de la cola
-		while ((Chip_UART_ReadLineStatus(LPC_USART2) & UART_LSR_THRE) != 0){
-			Chip_UART_SendByte(LPC_USART2, tx);
-		}
-
-
-
-		//if(buffer de transmitir esta vacio) {
-		//	Chip_UART_IntDisable(LPC_USART2, UART_IER_THREINT);
-		//}
-
-		// Borrar el if siguiente
-		tx=0;
-		if(tx==0) {
+		if(tx_buffer.size == 0)	//Buffer vacío
+		{
 			Chip_UART_IntDisable(LPC_USART2, UART_IER_THREINT);
+			primer_elemento = 0;
 		}
-
+		else	// Existen elementos a enviar
+		{
+			if(primer_elemento != 0)
+			{
+				Chip_UART_SendByte(LPC_USART2, tx);
+			}
+			primer_elemento = 1;
+		}
 	}
 
-	while (Chip_UART_ReadLineStatus(LPC_USART2) & UART_LSR_RDR) {
-		tx = Chip_UART_ReadByte(LPC_USART2);
-		// Agregar datoGlobal al buffer
-
-		// Borrar la linea siguiente
-		Chip_UART_IntEnable(LPC_USART2, UART_IER_THREINT);
-	}
 }
 
 /** @} doxygen end group definition */

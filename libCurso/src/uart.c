@@ -107,6 +107,11 @@ void InitUart(uint8_t uart_id, uint32_t baud)
 		Chip_SCU_PinMux(UART2_PIN_PKG, UART2_PIN_RXD, MD_PLN|MD_EZI|MD_ZI, FUNC6); /* P7_2: UART2_RXD */
 
 		Chip_UART_ConfigData (LPC_USART2, UART_LCR_WLEN8 | UART_LCR_SBS_1BIT | UART_LCR_PARITY_DIS );
+
+		// Configuracion de la interrupcion de la UART
+		Chip_UART_IntEnable(LPC_USART2, UART_IER_THREINT);
+		NVIC_SetPriority(USART2_IRQn, 1);
+		NVIC_EnableIRQ(USART2_IRQn);
 	}
 }
 
